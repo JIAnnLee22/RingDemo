@@ -39,15 +39,6 @@ class SoundPlay {
 
 
     int fre;
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == 22) {
-
-            }
-        }
-    };
 
     public void startSound() {
         fre = getFrequency();
