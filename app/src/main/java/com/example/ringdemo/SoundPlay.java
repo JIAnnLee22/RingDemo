@@ -40,9 +40,20 @@ class SoundPlay {
 
     int fre;
 
+    SoundHandler soundHandler = new SoundHandler();
+
     public void startSound() {
         fre = getFrequency();
-        Log.d(TAG, "startSound: " + fre);
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                if (fre > 0) {
+                    showSound();
+                }
+                fre--;
+            }
+        }.start();
     }
 
     private void showSound() {
@@ -81,6 +92,9 @@ class SoundPlay {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
+            if (msg.what == 2) {
+                Log.d(TAG, "handleMessage: ");
+            }
         }
     }
 }
