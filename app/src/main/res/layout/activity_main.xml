@@ -4,50 +4,80 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#DDD"
     android:orientation="vertical"
-    tools:context=".MainActivity" >
+    tools:context=".MainActivity">
 
-    <androidx.cardview.widget.CardView
+    <RadioGroup
         android:layout_width="match_parent"
-        android:layout_height="40dp" >
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp">
 
-        <TextView
-            android:id="@+id/textView"
+        <RadioButton
+            android:id="@+id/ring"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:background="#fff"
+            android:button="@drawable/ring_select"
+            android:checked="true"
             android:gravity="center"
-            android:text="TextView" />
-    </androidx.cardview.widget.CardView>
+            android:padding="8dp"
+            android:text="ring" />
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="40dp" >
-
-        <TextView
-            android:id="@+id/textView2"
+        <RadioButton
+            android:id="@+id/ring1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:background="#fff"
+            android:button="@drawable/ring_select"
+            android:checked="false"
             android:gravity="center"
-            android:text="TextView" />
-    </androidx.cardview.widget.CardView>
+            android:padding="8dp"
+            android:text="ring1" />
+    </RadioGroup>
 
-    <Button
-        android:id="@+id/button_once"
+    <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="一次" />
+        android:layout_marginBottom="8dp">
 
-    <Button
-        android:id="@+id/button_thrice"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="三次" />
+        <RadioButton
+            android:id="@+id/button_once"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:background="#fff"
+            android:button="@drawable/ring_select"
+            android:checked="true"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="一次" />
 
-    <Button
-        android:id="@+id/button_loop"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="无限死循环" />
+        <RadioButton
+            android:id="@+id/button_thrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:background="#fff"
+            android:button="@drawable/ring_select"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="三次" />
+
+        <RadioButton
+            android:id="@+id/button_loop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="1dp"
+            android:background="#fff"
+            android:button="@drawable/ring_select"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="无限循环" />
+
+    </RadioGroup>
 
     <Button
         android:id="@+id/play"
@@ -60,4 +90,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="停止播放" />
+
+    <Button
+        android:id="@+id/new_order"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="new order" />
+
 </LinearLayout>

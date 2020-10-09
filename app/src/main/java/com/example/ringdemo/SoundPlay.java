@@ -1,24 +1,30 @@
 package com.example.ringdemo;
 
-import android.annotation.SuppressLint;
-import android.app.Application;
 import android.content.Context;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Message;
+import android.media.SoundPool;
+import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
 
 class SoundPlay {
 
-    private MediaPlayer player;//音频播放器
     private Context context;//声明Context
-    private int frequency = 0;//次数
+    private int frequency = 1;//次数
     private int raw;//音频资源
+
+    private SoundPool pool;//音频播放器
+    private int soundId;
+    private int soundP;
+    Map<String, Integer> poolMap;
 
 
     public SoundPlay() {
@@ -31,47 +37,53 @@ class SoundPlay {
     }
 
     public void build() {
-        if (player == null) {
-            player = new MediaPlayer();
+        if (pool == null) {
+            //高版本使用新的初始化方式
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                AudioAttributes attr = new AudioAttributes.Builder()
+                        //设置
+                        .setLegacyStreamType(AudioManager.STREAM_MUSIC).build();
+                pool = new SoundPool.Builder()
+                        .setAudioAttributes(attr) // 设置音效池的属性
+                        .setMaxStreams(1) // 设置最多同时播放的音频流
+                        .build();
+            } else {
+                //1.最多同时播放的音频流个数，2.播放属性为系统提示音，3.音质
+                pool = new SoundPool(1, AudioManager.STREAM_MUSIC, 3);
+            }
         }
-        player = MediaPlayer.create(context, raw);
+        //音频id
+        soundId = pool.load(context, raw, 1);
     }
 
-
-    int fre;
-
-    SoundHandler soundHandler = new SoundHandler();
+    int fre;//控制次数从0开始
 
     public void startSound() {
-        fre = getFrequency();
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                if (fre > 0) {
-                    showSound();
-                }
-                fre--;
-            }
-        }.start();
-    }
-
-    private void showSound() {
-        if (player != null) {
-            player.start();
+        if (pool != null) {
+            fre = getFrequency() - 1;//设置次数从0开始所以-1
+            //音频id-左声道-右声道-优先级-次数-速率
+            soundP = pool.play(soundId, 1, 1, 3, fre, 2);
         }
     }
 
     public void stopSound() {
-        if (player != null) {
-            player.stop();
+        if (pool != null) {
+            pool.stop(soundP);
         }
     }
 
-    public void release() {
-        if (player != null) {
-            player.release();
-            player = null;
+    public void onResume() {
+        pool.resume(soundP);
+    }
+
+    public void onPause() {
+        pool.pause(soundP);
+    }
+
+    public void onDestroy() {
+        if (pool != null) {
+            pool.release();
+            pool = null;
         }
     }
 
@@ -80,21 +92,11 @@ class SoundPlay {
     }
 
     public int getFrequency() {
-        if (frequency == 0) {
-            return 1;
-        } else {
-            return frequency;
-        }
+        return frequency;
     }
 
-
-    static class SoundHandler extends Handler {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == 2) {
-                Log.d(TAG, "handleMessage: ");
-            }
-        }
+    public void setRaw(int raw) {
+        this.raw = raw;
+        soundId = pool.load(context, raw, 1);
     }
 }
