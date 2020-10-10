@@ -1,11 +1,13 @@
 package com.example.ringdemo;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,31 +16,47 @@ import android.widget.RadioButton;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, NotificationClickListener {
 
-    private Button play, stop, newOrder;
-    private RadioButton once, thrice, loop, ring, ring1;
-    private SoundPlay soundPlay;
-    private int raw = R.raw.ring;
-    private String TAG = "MainActivity";
-    private NotifyNewOrder notifyNewOrder;
-    private NewOrdersReceiver receiver;
+    private Button play;//播放声音按钮
+    private Button stop;//停止声音按钮
+    private Button newOrder;//新订单通知测试按钮
+    private RadioButton once;//通知音循环一次选项
+    private RadioButton thrice;//通知音循环三次选项
+    private RadioButton loop;//通知音无限循环选项
+    private RadioButton ring;//通知音0选项
+    private RadioButton ring1;//通知音1选项
+    private SoundPlay soundPlay;//声明音频操作类
+    private int raw = R.raw.ring;//通知音
+    private NotifyNewOrder notifyNewOrder;//新订单通知类声明
+    private NewOrderReceiver receiver;//通知处理广播类声明
+    private IntentFilter intentFilter;//通知过滤类声明
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //创建SoundPlay的实例
         soundPlay = new SoundPlay(this, raw);
+        //初始化
         soundPlay.build();
 
-        Intent intentClick = new Intent(this, NewOrdersReceiver.class);
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("newOrders");
-        intentClick.setAction("notification_clicked");
-        notifyNewOrder = new NotifyNewOrder(this, intentClick);
-        receiver = new NewOrdersReceiver();
-        receiver.setClickListener(this);
-        registerReceiver(receiver, intentFilter);
+        //创建IntentFilter的实例
+        intentFilter = new IntentFilter();
+        //添加需要接收的action
+        intentFilter.addAction("notification_clicked");
 
+        //创建通知类的实例
+        notifyNewOrder = new NotifyNewOrder(this);
+        //创建广播的实例
+        receiver = new NewOrderReceiver();
+        receiver.setClickListener(this);
+
+        initButton();
+
+    }
+
+    private void initButton() {
+        //注册按钮
         once = findViewById(R.id.button_once);
         thrice = findViewById(R.id.button_thrice);
         loop = findViewById(R.id.button_loop);
@@ -58,29 +76,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         once.setOnCheckedChangeListener(this);
         thrice.setOnCheckedChangeListener(this);
         loop.setOnCheckedChangeListener(this);
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Intent intentClick = new Intent(this, NewOrdersReceiver.class);
-
         soundPlay.onResume();
+        //注册广播
+        registerReceiver(receiver, intentFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        soundPlay.onPause();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        soundPlay.stopSound();
-        soundPlay.onDestroy();
-        soundPlay = null;
+        //取消注册广播
+        unregisterReceiver(receiver);
+        if (soundPlay != null) {
+            soundPlay.stopSound();
+            soundPlay.onDestroy();
+            soundPlay = null;
+        }
     }
 
     @Override
@@ -101,43 +121,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        switch (compoundButton.getId()) {
-            case R.id.button_once:
-                if (b) {
+        if (b) {
+            switch (compoundButton.getId()) {
+                case R.id.button_once:
                     soundPlay.setFrequency(1);
-                    soundPlay.startSound();
-                }
-                break;
-            case R.id.button_thrice:
-                if (b) {
+                    break;
+                case R.id.button_thrice:
                     soundPlay.setFrequency(3);
-                    soundPlay.startSound();
-                }
-                break;
-            case R.id.button_loop:
-                if (b) {
+                    break;
+                case R.id.button_loop:
                     soundPlay.setFrequency(0);
-                    soundPlay.startSound();
-                }
-                break;
-            case R.id.ring:
-                if (b) {
+                    break;
+                case R.id.ring:
                     raw = R.raw.ring;
                     soundPlay.setRaw(raw);
-                }
-                break;
-            case R.id.ring1:
-                if (b) {
+                    soundPlay.startSound();
+                    break;
+                case R.id.ring1:
                     raw = R.raw.ring1;
                     soundPlay.setRaw(raw);
-                }
-                break;
+                    soundPlay.startSound();
+                    break;
+            }
         }
     }
 
 
     @Override
     public void notificationClick() {
-        Log.d(TAG, "notificationClick: click");
+        //监听到点击了通知就停止通知音
+        soundPlay.stopSound();
     }
 }
