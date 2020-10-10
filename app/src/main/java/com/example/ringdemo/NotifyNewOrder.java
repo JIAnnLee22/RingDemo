@@ -28,7 +28,7 @@ class NotifyNewOrder {
         final NotificationManagerCompat nmc = NotificationManagerCompat.from(context);
         Intent intentClick = new Intent();
         intentClick.setAction("notification_clicked");
-        PendingIntent pendingIntentClick = PendingIntent.getBroadcast(context, 0, intentClick, 0);
+        PendingIntent pendingIntentClick = PendingIntent.getBroadcast(context, 0, intentClick, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationChannel channel;
         final NotificationCompat.Builder builder;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -41,14 +41,20 @@ class NotifyNewOrder {
             //不使用通知提示音，而是直接使用soundPool按照次数播放声音
             channel.setSound(null, null);
         } else {
+            //低于8.0系统创建
             builder = new NotificationCompat.Builder(context);
             builder.setContentTitle("新订单");
         }
         builder.setSmallIcon(R.drawable.ic_yes)
-                .setContentText("内容")
+                //内容
+                .setContentText("你有新的外卖订单")
+                //设置点击跳转的页面
                 .setContentIntent(pendingIntentClick)
+                //低版本设置悬浮通知
                 .setFullScreenIntent(pendingIntentClick, true)
+                //点击或划走自动消失
                 .setAutoCancel(true);
+        //使用时间戳作为id，不会把上一条覆盖
         nmc.notify((int) System.currentTimeMillis(), builder.build());
     }
 }

@@ -3,17 +3,8 @@ package com.example.ringdemo;
 import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Build;
-import android.util.Log;
-
-import androidx.annotation.RequiresApi;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static androidx.constraintlayout.motion.utils.Oscillator.TAG;
 
 class SoundPlay {
 
@@ -24,8 +15,6 @@ class SoundPlay {
     private SoundPool pool;//音频播放器
     private int soundId;
     private int soundP;
-    Map<String, Integer> poolMap;
-
 
     public SoundPlay() {
 
@@ -45,7 +34,6 @@ class SoundPlay {
                         .setLegacyStreamType(AudioManager.STREAM_MUSIC).build();
                 pool = new SoundPool.Builder()
                         .setAudioAttributes(attr) // 设置音效池的属性
-                        .setMaxStreams(1) // 设置最多同时播放的音频流
                         .build();
             } else {
                 //1.最多同时播放的音频流个数，2.播放属性为系统提示音，3.音质
