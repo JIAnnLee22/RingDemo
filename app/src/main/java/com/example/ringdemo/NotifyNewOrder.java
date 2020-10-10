@@ -18,24 +18,18 @@ import static android.content.ContentValues.TAG;
 class NotifyNewOrder {
 
     private Context context;
-    private Intent intentClick;
     private static final String CHANNEL_ID = "com.example.ringdemo";
 
-    public NotifyNewOrder(Context context, Intent intentClick) {
+    public NotifyNewOrder(Context context) {
         this.context = context;
-        this.intentClick = intentClick;
     }
 
     public void build() {
         final NotificationManagerCompat nmc = NotificationManagerCompat.from(context);
-
-//        Intent intentClick = new Intent(context, NewOrdersReceiver.class);
-//        intentClick.setAction("notification_clicked");
-
+        Intent intentClick = new Intent();
+        intentClick.setAction("notification_clicked");
         PendingIntent pendingIntentClick = PendingIntent.getBroadcast(context, 0, intentClick, 0);
-
         NotificationChannel channel;
-
         final NotificationCompat.Builder builder;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             //通知渠道
@@ -53,7 +47,6 @@ class NotifyNewOrder {
         builder.setSmallIcon(R.drawable.ic_yes)
                 .setContentText("内容")
                 .setContentIntent(pendingIntentClick)
-                .setOngoing(true)
                 .setAutoCancel(true);
         nmc.notify((int) System.currentTimeMillis(), builder.build());
     }
