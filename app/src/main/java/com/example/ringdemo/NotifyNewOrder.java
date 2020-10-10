@@ -47,6 +47,7 @@ class NotifyNewOrder {
         builder.setSmallIcon(R.drawable.ic_yes)
                 .setContentText("内容")
                 .setContentIntent(pendingIntentClick)
+                .setFullScreenIntent(pendingIntentClick, true)
                 .setAutoCancel(true);
         nmc.notify((int) System.currentTimeMillis(), builder.build());
     }
