@@ -49,8 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         notifyNewOrder = new NotifyNewOrder(this);
         //创建广播的实例
         receiver = new NewOrderReceiver();
-        receiver.setClickListener(this);
 
+        //初始化控件
         initButton();
 
     }
